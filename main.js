@@ -2,7 +2,7 @@ const fs = require('fs');
 const { XMLParser, XMLBuilder } = require('fast-xml-parser');
 
 // Read the file
-const fileName = '20220518NightCycling.gpx';
+const fileName = '20220522NightCycling.gpx';
 const xml = fs.readFileSync(`./data/${fileName}`, 'utf8');
 
 // Parse the XML
