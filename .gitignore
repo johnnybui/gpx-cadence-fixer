@@ -1,3 +1,4 @@
 data/
 fixed-data/
 .env
+node_modules/
