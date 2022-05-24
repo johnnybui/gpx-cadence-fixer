@@ -1,9 +1,16 @@
+require('dotenv').config();
 const fs = require('fs');
 const { XMLParser, XMLBuilder } = require('fast-xml-parser');
 
+// Config
+const dataFolder = './data/';
+const outputFolder = './fixed-data/';
+const fileName = process.env.FILE_NAME || '20220524NightCycling.gpx';
+const deviceName = process.env.DEVICE_NAME || 'XOSS SPRINT';
+const maxCadence = process.env.MAX_CADENCE || 100;
+
 // Read the file
-const fileName = '20220522NightCycling.gpx';
-const xml = fs.readFileSync(`./data/${fileName}`, 'utf8');
+const xml = fs.readFileSync(`${dataFolder}${fileName}`, 'utf8');
 
 // Parse the XML
 const options = {
@@ -15,7 +22,8 @@ const jObj = parser.parse(xml);
 // console.log(JSON.stringify(jObj, null, 2).substring(0, 1000));
 
 // Fix data
-const matchedDataSet = jObj.gpx.trk.trkseg.trkpt.filter(i => i.extensions['gpxtpx:TrackPointExtension']['gpxtpx:cad'] > 90);
+jObj.gpx['@_creator'] = deviceName;
+const matchedDataSet = jObj.gpx.trk.trkseg.trkpt.filter(i => i.extensions['gpxtpx:TrackPointExtension']['gpxtpx:cad'] > maxCadence);
 for (const item of matchedDataSet) {
   item.extensions['gpxtpx:TrackPointExtension']['gpxtpx:cad'] /= 2;
 }
@@ -26,4 +34,4 @@ const builder = new XMLBuilder(options);
 const xmlContent = builder.build(jObj);
 
 // Write to file
-fs.writeFileSync(`./fixed-data/${fileName}`, xmlContent);
+fs.writeFileSync(`${outputFolder}${fileName}`, xmlContent);
